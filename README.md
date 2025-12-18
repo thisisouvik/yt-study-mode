@@ -1,6 +1,10 @@
+<p align="center">
+	<img src="logo.png" alt="YouTube Study Mode" width="96" height="96" />
+</p>
+
 # 📚 YouTube Study Mode
 
-A Chrome extension that transforms YouTube into a distraction-free study platform by blocking all non-educational content.
+A Chrome extension that turns YouTube into a distraction-free study dashboard. Blocks Shorts/Trending/Recommendations, enforces autoplay OFF, and adds a clean Study Home.
 
 ## ✨ Features
 
@@ -9,16 +13,22 @@ A Chrome extension that transforms YouTube into a distraction-free study platfor
 - **Trending** - Removes trending page and suggestions
 - **Music** - Hides music recommendations
 - **Ads** - Blocks all advertisements
-- **Recommendations** - Removes sidebar and homepage suggestions
-- **Comments** - Hides comment sections
+- **Recommendations** - Removes sidebar and homepage suggestions (configurable)
+- **Comments** - Hides comment sections (configurable)
 - **End screens** - Blocks video suggestions at the end
-- **Autoplay** - Prevents automatic next video
+- **Autoplay** - Continuously forced OFF while Study Mode is enabled
 
 ### ✅ Shows Only Study Content:
 - **Continue Watching** - Your unfinished videos
 - **Your Playlists** - Your saved study playlists
 - **Search** - Full search functionality maintained
-- **Subscriptions** - Access to your subscribed channels
+- **Whitelisted Channels** - Track resume-only for approved channels
+
+### 🏠 Custom Study Home (Dashboard)
+- Minimal overlay replaces the default YouTube Home
+- Sections: Continue Studying + Study Playlists
+- No algorithmic recommendations or unrelated videos
+- Fast, SPA-safe render and updates
 
 ## 🚀 Installation
 
@@ -36,11 +46,13 @@ A Chrome extension that transforms YouTube into a distraction-free study platfor
 3. Reload YouTube page to apply changes
 4. Focus on your studies without distractions!
 
-## 🎮 Controls
+## 🎮 Popup Dashboard
 
-- **Toggle Button** - Enable/Disable study mode
-- **Reload Button** - Refresh YouTube page
-- **Status Indicator** - Shows current mode (Active/Inactive)
+- Study Mode: ON/OFF pill
+- Allowed Content: Subscribed (placeholder), Whitelisted, Playlists Only
+- Quick Controls: Hide Comments, Hide Recommendations, Disable Autoplay
+- Focus Tools: Study Time Today, Daily Limit, Start/Stop Focus Session
+- Exam Mode: Hard lock — overlay says “YouTube is locked. Focus on your exam preparation.” and only allows whitelisted/playlist content
 
 ## 🛠️ Technical Details
 
@@ -48,40 +60,54 @@ A Chrome extension that transforms YouTube into a distraction-free study platfor
 ```
 yt-study-mode/
 ├── manifest.json       # Extension configuration
-├── content.js          # Main blocking logic
-├── style.css          # CSS-based blocking
-├── background.js      # Background processes
+├── content.js          # Blocking, Study Home, autoplay, exam lock, tracking
+├── style.css           # CSS-based blocking + Study Home styles
+├── background.js       # (Currently unused)
 ├── popup/
 │   ├── popup.html     # Extension popup UI
 │   ├── popup.css      # Popup styling
 │   └── popup.js       # Popup controls
+├── logo.png            # Extension icon
 └── README.md          # Documentation
 ```
 
 ### How It Works:
 1. **CSS Blocking** - Hides elements using display:none
-2. **JavaScript Blocking** - Removes elements dynamically
-3. **URL Interception** - Prevents navigation to Shorts/Trending
-4. **Mutation Observer** - Catches dynamically loaded content
+2. **JavaScript Blocking** - Removes/overlays dynamically (SPA-safe)
+3. **Autoplay Enforcement** - Detects and toggles player/compact autoplay OFF
+4. **URL Interception** - Prevents navigation to Shorts/Trending
+5. **Study Home Overlay** - Injects minimal dashboard on Home routes
+6. **Progress Tracking** - Saves last watched video + timestamp for resume
+7. **Study Time Tracking** - Adds +1 min per active playback minute (eligible content)
 
 ## 🔧 Customization
 
-To modify what gets blocked, edit the `hideSelectors` array in [content.js](content.js).
+- Allowed content: Save channel IDs to `whitelistChannelIds`, and playlists to `studyPlaylists`.
+- Playlists Only: When enabled, progress/tracking only counts for saved playlists.
+- Disable Autoplay / Hide Comments / Hide Recommendations: Toggle in the popup; `content.js` enforces them.
 
-To allow certain content, add selectors to the `keepSelectors` array.
+Examples (DevTools Console while on YouTube):
+
+```js
+chrome.storage.sync.set({ whitelistChannelIds: ['UCX6b17PVsYBQ0ip5gyeme-Q'] })
+chrome.storage.sync.set({ studyPlaylists: [
+	{ title: 'Linear Algebra', playlistId: 'PLxyz...', url: 'https://www.youtube.com/playlist?list=PLxyz...' }
+]})
+```
 
 ## ⚙️ Permissions
 
 - `storage` - Save user preferences
 - `tabs` - Reload YouTube tabs
 - `host_permissions` - Access YouTube pages
+ - `action` - Uses logo.png for toolbar icon
 
 ## 📝 Notes
 
 - Extension runs only on youtube.com
-- Default state is ENABLED
-- Uses Chrome Storage API for persistence
-- MutationObserver ensures dynamic content is blocked
+- Default Study Mode is ON (unless disabled in popup)
+- Chrome Storage API used for persistence and tracking
+- MutationObserver + timer loops ensure SPA content stays aligned
 
 ## 🐛 Troubleshooting
 
@@ -97,10 +123,10 @@ To allow certain content, add selectors to the `keepSelectors` array.
 
 ## 🎯 Future Enhancements
 
-- [ ] Whitelist specific channels
-- [ ] Custom keyword filtering
-- [ ] Study time tracking
-- [ ] Focus mode timer
+- [ ] One-click “Save current channel/playlist” buttons
+- [ ] Subscription-based filtering implementation
+- [ ] Keyword-level filtering
+- [ ] Focus session timer + block non-study tabs
 - [ ] Export/Import settings
 
 ## 📄 License
