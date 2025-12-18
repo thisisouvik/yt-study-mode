@@ -1,0 +1,7 @@
+ytd-rich-grid-renderer,
+ytd-reel-shelf-renderer,
+#related,
+ytd-comments,
+ytd-mini-guide-renderer {
+  display: none !important;
+}

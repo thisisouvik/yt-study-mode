@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "YouTube Study Mode",
+  "description": "Forces YouTube to show only educational content",
+  "version": "1.0",
+  "permissions": ["storage", "tabs"],
+  "host_permissions": ["https://www.youtube.com/*"],
+  "content_scripts": [
+    {
+      "matches": ["https://www.youtube.com/*"],
+      "js": ["content.js"],
+      "css": ["styles.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "popup/popup.html"
+  }
+}
