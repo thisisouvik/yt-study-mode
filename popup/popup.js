@@ -10,7 +10,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const studyTime = $('studyTime');
   const dailyLimit = $('dailyLimit');
   const focusToggle = $('focus-toggle');
-  const examToggle = $('exam-toggle');
 
   function setModePill(enabled) {
     if (enabled) {
@@ -53,9 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const focusActive = cfg.focusSessionActive === true;
       focusToggle.textContent = focusActive ? 'Stop Focus Session' : 'Start Focus Session';
 
-      const exam = cfg.examMode === true;
-      examToggle.textContent = exam ? 'UNLOCK YOUTUBE' : 'LOCK YOUTUBE';
-      examToggle.classList.toggle('danger', !exam);
+      // Exam mode removed
     });
   }
 
@@ -96,15 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  examToggle.addEventListener('click', () => {
-    chrome.storage.sync.get(['examMode'], ({ examMode }) => {
-      const newVal = !(examMode === true);
-      chrome.storage.sync.set({ examMode: newVal }, () => {
-        loadState();
-        chrome.tabs.query({ url: 'https://www.youtube.com/*' }, (tabs) => tabs.forEach(t => chrome.tabs.reload(t.id)));
-      });
-    });
-  });
+  // Exam mode removed
 
   loadState();
 });

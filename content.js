@@ -21,7 +21,8 @@
     'examMode', 'allowedWhitelisted', 'playlistsOnly'
   ], function(cfg) {
     var enabled = cfg.enabled !== false;
-    if (!enabled) return;
+    var active = enabled;
+    if (!enabled) { document.body.classList.remove('study-mode-active'); return; }
 
     var musicAllowed = cfg.allowMusic === true;
     var whitelistChannelIds = Array.isArray(cfg.whitelistChannelIds) ? cfg.whitelistChannelIds : [];
@@ -35,6 +36,7 @@
     var playlistsOnly = cfg.playlistsOnly === true;
 
     console.log('YouTube Study Mode: Active');
+    document.body.classList.add('study-mode-active');
 
     // Eligibility helpers
     function isWhitelistedChannel(channelId) {
@@ -70,6 +72,7 @@
 
     // Hide distractions
     function hideDistractions() {
+      if (!active) return;
       var selectors = [];
       // Shorts
       selectors.push('ytd-reel-shelf-renderer','ytd-rich-shelf-renderer[is-shorts]','[is-shorts]','ytd-shorts','#shorts-container');
@@ -136,6 +139,7 @@
 
     // Navigation blocks
     function blockNavigationLinks() {
+      if (!active) return;
       var selector = 'a[href*="/shorts"], a[href*="/trending"], a[href*="/feed/explore"]';
       if (!musicAllowed) selector += ', a[href*="/channel/UC-9-kyTW8ZkZNDHQJ6FgpwQ"]';
       document.querySelectorAll(selector).forEach(function(link){
@@ -146,10 +150,12 @@
     var originalPushState = history.pushState;
     var originalReplaceState = history.replaceState;
     history.pushState = function(state){
+      if (!active) return originalPushState.apply(history, arguments);
       if (arguments[2] && (arguments[2].indexOf('/shorts/')!==-1 || arguments[2].indexOf('/trending')!==-1)) return;
       return originalPushState.apply(history, arguments);
     };
     history.replaceState = function(state){
+      if (!active) return originalReplaceState.apply(history, arguments);
       if (arguments[2] && (arguments[2].indexOf('/shorts/')!==-1 || arguments[2].indexOf('/trending')!==-1)) return;
       return originalReplaceState.apply(history, arguments);
     };
@@ -157,6 +163,7 @@
 
     // Autoplay enforcement
     function enforceAutoplayOff() {
+      if (!active) return;
       if (!disableAutoplayPref) return;
       try {
         var btn = document.querySelector('.ytp-autonav-toggle-button');
@@ -192,6 +199,7 @@
       section.appendChild(list); return section;
     }
     function renderStudyHome(){
+      if (!active) return removeStudyHome();
       if (!isHomeRoute()) return removeStudyHome();
       document.body.classList.add('study-home-active');
       var mount=document.getElementById(HOME_ID);
@@ -201,7 +209,7 @@
       mount.appendChild(buildContinueStudyingSection());
       mount.appendChild(buildPlaylistsSection());
     }
-    function updateHomeVisibility(){ if (isHomeRoute()) renderStudyHome(); else removeStudyHome(); }
+    function updateHomeVisibility(){ if (!active) { removeStudyHome(); return; } if (isHomeRoute()) renderStudyHome(); else removeStudyHome(); }
 
     // Exam Mode (hard lock)
     var EXAM_ID='yt-exam-lock';
@@ -226,7 +234,7 @@
     }
     function removeExamOverlay(){ var x=document.getElementById(EXAM_ID); if (x&&x.parentElement) x.parentElement.removeChild(x); }
     function enforceExamMode(){
-      if (!examMode){ removeExamOverlay(); document.documentElement.style.pointerEvents=''; return; }
+      if (!active || !examMode){ removeExamOverlay(); document.documentElement.style.pointerEvents=''; return; }
       var vid=document.querySelector('video'); if (vid && !vid.paused){ try{ vid.pause(); }catch(_){}}
       var path=location.pathname||''; var onWatch=path.indexOf('/watch')!==-1; var info=onWatch?currentVideoInfo():null; var eligible=onWatch?isEligible(info):false;
       if (onWatch && eligible){ document.documentElement.style.pointerEvents=''; removeExamOverlay(); }
@@ -241,10 +249,10 @@
     enforceExamMode();
 
     // Periodic reinforce (SPA)
-    setInterval(function(){ hideDistractions(); blockNavigationLinks(); enforceAutoplayOff(); updateHomeVisibility(); enforceExamMode(); }, 500);
+    setInterval(function(){ if (!active) return; hideDistractions(); blockNavigationLinks(); enforceAutoplayOff(); updateHomeVisibility(); enforceExamMode(); }, 500);
 
     // DOM changes
-    var observer = new MutationObserver(function(){ hideDistractions(); blockNavigationLinks(); enforceAutoplayOff(); updateHomeVisibility(); enforceExamMode(); });
+    var observer = new MutationObserver(function(){ if (!active) return; hideDistractions(); blockNavigationLinks(); enforceAutoplayOff(); updateHomeVisibility(); enforceExamMode(); });
     observer.observe(document.body, { childList: true, subtree: true });
 
     // Progress + Study time tracking
@@ -289,7 +297,23 @@
       if (changes.examMode) { examMode = changes.examMode.newValue === true; enforceExamMode(); }
       if (changes.allowedWhitelisted) allowedWhitelisted = changes.allowedWhitelisted.newValue !== false;
       if (changes.playlistsOnly) playlistsOnly = changes.playlistsOnly.newValue === true;
-      if (changes.enabled) { var nowEnabled = changes.enabled.newValue !== false; if (!nowEnabled) { removeStudyHome(); removeExamOverlay(); } else { updateHomeVisibility(); enforceExamMode(); } }
+      if (changes.enabled) {
+        var nowEnabled = changes.enabled.newValue !== false;
+        active = nowEnabled;
+        if (!nowEnabled) {
+          document.body.classList.remove('study-mode-active');
+          removeStudyHome(); removeExamOverlay();
+          // Restore any inline hidden elements
+          try {
+            ['ytd-reel-shelf-renderer','ytd-rich-shelf-renderer[is-shorts]','[is-shorts]','ytd-shorts','#shorts-container','#related','#secondary','ytd-comments','ytd-comments-header-renderer','#comments','.ytp-ce-element','.ytp-endscreen-content','ytd-mini-guide-renderer','ytd-search-refinement-card-renderer','#notification-count','ytd-merch-shelf-renderer','ytd-live-chat-frame','ytd-playlist-panel-renderer','.video-ads','.ytp-ad-module','ytd-display-ad-renderer','ytd-statement-banner-renderer','ytd-banner-promo-renderer','ytd-ad-slot-renderer','#masthead-ad','ytd-in-feed-ad-layout-renderer','ytd-promoted-sparkles-web-renderer','ytd-rich-grid-row:not(:has(ytd-rich-section-renderer))','ytd-rich-item-renderer'].forEach(function(sel){
+              document.querySelectorAll(sel).forEach(function(el){ el.style.display=''; el.style.visibility=''; });
+            });
+          } catch(_){}
+        } else {
+          document.body.classList.add('study-mode-active');
+          updateHomeVisibility(); enforceExamMode();
+        }
+      }
     });
   });
 })();

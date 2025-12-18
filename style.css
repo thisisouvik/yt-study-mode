@@ -1,109 +1,109 @@
-/* YouTube Study Mode - Hide all distractions */
+/* YouTube Study Mode - Hide all distractions (active only) */
 
 /* Shorts */
-ytd-reel-shelf-renderer,
-ytd-rich-shelf-renderer[is-shorts],
-[is-shorts],
-ytd-shorts,
-#shorts-container,
-a[href*="/shorts/"] {
+body.study-mode-active ytd-reel-shelf-renderer,
+body.study-mode-active ytd-rich-shelf-renderer[is-shorts],
+body.study-mode-active [is-shorts],
+body.study-mode-active ytd-shorts,
+body.study-mode-active #shorts-container,
+body.study-mode-active a[href*="/shorts/"] {
   display: none !important;
   visibility: hidden !important;
 }
 
 /* Trending, Explore in sidebar */
-ytd-guide-entry-renderer:has([title="Trending"]),
-ytd-guide-entry-renderer:has([title="Explore"]) {
+body.study-mode-active ytd-guide-entry-renderer:has([title="Trending"]),
+body.study-mode-active ytd-guide-entry-renderer:has([title="Explore"]) {
   display: none !important;
 }
 
 /* Home page recommendations (except Continue Watching) */
-ytd-rich-grid-row:not(:has(ytd-rich-section-renderer)),
-ytd-rich-item-renderer {
+body.study-mode-active ytd-rich-grid-row:not(:has(ytd-rich-section-renderer)),
+body.study-mode-active ytd-rich-item-renderer {
   display: none !important;
 }
 
 /* Sidebar recommendations on video pages */
-#related,
-#secondary {
+body.study-mode-active #related,
+body.study-mode-active #secondary {
   display: none !important;
 }
 
 /* Comments */
-ytd-comments,
-ytd-comments-header-renderer,
-#comments {
+body.study-mode-active ytd-comments,
+body.study-mode-active ytd-comments-header-renderer,
+body.study-mode-active #comments {
   display: none !important;
 }
 
 /* End screen suggestions */
-.ytp-ce-element,
-.ytp-endscreen-content,
-.ytp-suggestion-set {
+body.study-mode-active .ytp-ce-element,
+body.study-mode-active .ytp-endscreen-content,
+body.study-mode-active .ytp-suggestion-set {
   display: none !important;
 }
 
 /* Mini guide */
-ytd-mini-guide-renderer {
+body.study-mode-active ytd-mini-guide-renderer {
   display: none !important;
 }
 
 /* Ads */
-.video-ads,
-.ytp-ad-module,
-.ytp-ad-overlay-container,
-.ytp-ad-player-overlay,
-ytd-display-ad-renderer,
-ytd-statement-banner-renderer,
-ytd-banner-promo-renderer,
-ytd-ad-slot-renderer,
-#masthead-ad,
-ytd-in-feed-ad-layout-renderer,
-ytd-promoted-sparkles-web-renderer {
+body.study-mode-active .video-ads,
+body.study-mode-active .ytp-ad-module,
+body.study-mode-active .ytp-ad-overlay-container,
+body.study-mode-active .ytp-ad-player-overlay,
+body.study-mode-active ytd-display-ad-renderer,
+body.study-mode-active ytd-statement-banner-renderer,
+body.study-mode-active ytd-banner-promo-renderer,
+body.study-mode-active ytd-ad-slot-renderer,
+body.study-mode-active #masthead-ad,
+body.study-mode-active ytd-in-feed-ad-layout-renderer,
+body.study-mode-active ytd-promoted-sparkles-web-renderer {
   display: none !important;
   visibility: hidden !important;
 }
 
 /* Merchandising */
-ytd-merch-shelf-renderer {
+body.study-mode-active ytd-merch-shelf-renderer {
   display: none !important;
 }
 
 /* Live chat */
-ytd-live-chat-frame {
+body.study-mode-active ytd-live-chat-frame {
   display: none !important;
 }
 
 /* Playlist recommendations */
-ytd-playlist-panel-renderer {
+body.study-mode-active ytd-playlist-panel-renderer {
   display: none !important;
 }
 
 /* Search refinement cards */
-ytd-search-refinement-card-renderer {
+body.study-mode-active ytd-search-refinement-card-renderer {
   display: none !important;
 }
 
 /* Show only Continue Watching section */
-ytd-rich-section-renderer,
-ytd-item-section-renderer {
+body.study-mode-active ytd-rich-section-renderer,
+body.study-mode-active ytd-item-section-renderer {
   display: block !important;
 }
 
 /* Clean up the feed */
-#primary {
+body.study-mode-active #primary {
   width: 100% !important;
   max-width: 1280px !important;
   margin: 0 auto !important;
 }
 
 /* Hide video suggestions below player */
-.ytp-videowall-still {
+body.study-mode-active .ytp-videowall-still {
   display: none !important;
 }
 
 /* Hide autoplay toggle */
-.ytp-autonav-toggle-button {
+body.study-mode-active .ytp-autonav-toggle-button {
   display: none !important;
 }
 
