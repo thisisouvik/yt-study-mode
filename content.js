@@ -22,7 +22,20 @@
   ], function(cfg) {
     var enabled = cfg.enabled !== false;
     var active = enabled;
-    if (!enabled) { document.body.classList.remove('study-mode-active'); return; }
+    function addActiveClass() {
+      if (document.body) {
+        document.body.classList.add('study-mode-active');
+      } else {
+        document.addEventListener('DOMContentLoaded', function once() {
+          document.removeEventListener('DOMContentLoaded', once);
+          if (document.body) document.body.classList.add('study-mode-active');
+        });
+      }
+    }
+    function removeActiveClass() {
+      if (document.body) document.body.classList.remove('study-mode-active');
+    }
+    if (!enabled) { removeActiveClass(); return; }
 
     var musicAllowed = cfg.allowMusic === true;
     var whitelistChannelIds = Array.isArray(cfg.whitelistChannelIds) ? cfg.whitelistChannelIds : [];
@@ -36,7 +49,7 @@
     var playlistsOnly = cfg.playlistsOnly === true;
 
     console.log('YouTube Study Mode: Active');
-    document.body.classList.add('study-mode-active');
+    addActiveClass();
 
     // Eligibility helpers
     function isWhitelistedChannel(channelId) {
@@ -253,7 +266,16 @@
 
     // DOM changes
     var observer = new MutationObserver(function(){ if (!active) return; hideDistractions(); blockNavigationLinks(); enforceAutoplayOff(); updateHomeVisibility(); enforceExamMode(); });
-    observer.observe(document.body, { childList: true, subtree: true });
+    (function observeWhenReady(){
+      if (document.body) {
+        try { observer.observe(document.body, { childList: true, subtree: true }); } catch(_){}
+      } else {
+        document.addEventListener('DOMContentLoaded', function once(){
+          document.removeEventListener('DOMContentLoaded', once);
+          try { observer.observe(document.body, { childList: true, subtree: true }); } catch(_){}
+        });
+      }
+    })();
 
     // Progress + Study time tracking
     var progressTimer = null;
@@ -301,7 +323,7 @@
         var nowEnabled = changes.enabled.newValue !== false;
         active = nowEnabled;
         if (!nowEnabled) {
-          document.body.classList.remove('study-mode-active');
+          removeActiveClass();
           removeStudyHome(); removeExamOverlay();
           // Restore any inline hidden elements
           try {
@@ -310,7 +332,7 @@
             });
           } catch(_){}
         } else {
-          document.body.classList.add('study-mode-active');
+          addActiveClass();
           updateHomeVisibility(); enforceExamMode();
         }
       }
@@ -341,7 +363,7 @@
     const isHomeRoute = () => {
       const p = location.pathname.replace(/\/$/, '');
       return p === '' || p === '/feed' || p === '/feed/you';
-    const hideSelectors = [
+    };
     
     // Comprehensive list of distracting elements to hide
     const hideSelectors = [
