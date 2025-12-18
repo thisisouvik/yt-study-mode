@@ -5,20 +5,53 @@
 </head>
 <body>
   <div class="container">
-    <h1>YouTube Study Mode</h1>
-    
-    <div class="status" id="status">
-      <span id="status-text">Checking...</span>
+    <div class="header-row">
+      <h1>YouTube Study Mode</h1>
+      <button id="mode-toggle" class="pill">ON</button>
     </div>
-    
-    <button id="toggle" class="btn-toggle">Toggle</button>
-    
-    <div class="options">
-      <label class="option-item">
-        <input type="checkbox" id="allow-music">
-        <span>Allow Music</span>
-      </label>
-    </div>
+
+    <div class="divider"></div>
+
+    <section class="section">
+      <h2>Allowed Content</h2>
+      <label class="option-item"><input type="checkbox" id="allowedSubscribed"> <span>Subscribed Channels</span></label>
+      <label class="option-item"><input type="checkbox" id="allowedWhitelisted"> <span>Whitelisted Channels</span></label>
+      <label class="option-item"><input type="checkbox" id="playlistsOnly"> <span>Playlists Only</span></label>
+    </section>
+
+    <div class="divider"></div>
+
+    <section class="section">
+      <h2>Quick Controls</h2>
+      <label class="option-item"><input type="checkbox" id="hideComments"> <span>Hide Comments</span></label>
+      <label class="option-item"><input type="checkbox" id="hideRecommendations"> <span>Hide Recommendations</span></label>
+      <label class="option-item"><input type="checkbox" id="disableAutoplay"> <span>Disable Autoplay</span></label>
+    </section>
+
+    <div class="divider"></div>
+
+    <section class="section">
+      <h2>Focus Tools</h2>
+      <div class="kv">
+        <div>Study Time Today:</div>
+        <div id="studyTime">0 min</div>
+      </div>
+      <div class="kv">
+        <div>Set Timer:</div>
+        <div>
+          <input id="dailyLimit" type="number" min="10" step="10" class="num" />
+          <span>min</span>
+        </div>
+      </div>
+      <button id="focus-toggle" class="btn">Start Focus Session</button>
+    </section>
+
+    <div class="divider"></div>
+
+    <section class="section">
+      <h2>Exam Mode</h2>
+      <button id="exam-toggle" class="btn danger">LOCK YOUTUBE</button>
+    </section>
   </div>
 
   <script src="popup.js"></script>

@@ -193,3 +193,6 @@ body.study-home-active ytd-two-column-browse-results-renderer #contents {
   color: inherit;
   text-decoration: none;
 }
+
+/* Exam Mode overlay (sizes inline for max compatibility) */
+#yt-exam-lock { }
